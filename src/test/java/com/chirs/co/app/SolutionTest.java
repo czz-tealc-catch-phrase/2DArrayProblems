@@ -213,6 +213,7 @@ public class SolutionTest {
                     input.size(),
                     expected.size()));
         }
+
         List<AssertionErrorStruct> assertionErrors = new ArrayList<>();
 
         for (int i = 0; i < input.size(); i++) {
