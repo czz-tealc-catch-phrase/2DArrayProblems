@@ -1,19 +1,15 @@
 package com.chirs.co.app;
 
-import com.sun.org.apache.xpath.internal.functions.Function2Args;
 import javafx.util.Pair;
-import org.junit.Assert;
 import org.junit.Test;
 
-import javax.naming.directory.SearchControls;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.chirs.co.app.AssertionErrorStruct.nope;
 import static org.junit.Assert.*;
 
-public class Solution {
+public class SolutionTest {
     /*Transpose*/
     @Test
     public void test_transpose() {
@@ -144,27 +140,6 @@ public class Solution {
 
         generalTest(input, expected, f, validate);
     }
-    private Pair<Integer, Integer> my_bad_searchSortedMatrix(int[][] input, int searchValue) {
-        int rowLength = input.length;
-        int colLength = input[0].length;
-        int size = rowLength * colLength;
-        int middle = size / 2;
-
-        while (middle > 0 && middle < size) {
-            int middleX = middle % rowLength;
-            int middleY = middle % colLength;
-            int currentValue = input[middleX][middleY];
-
-            if (currentValue < searchValue) {
-                middle = (middle - 1) / 2;
-            } else if (currentValue > searchValue) {
-                middle = (size + middle + 1) / 2;
-            } else {
-                return new Pair<>(middleX, middleY);
-            }
-        }
-        return null;
-    }
 
     private Pair<Integer, Integer> searchSortedMatrix(int[][] input, int searchValue) {
         if(input == null || input[0] == null) {
@@ -180,7 +155,7 @@ public class Solution {
             int colIndex = helperSearch(input[mid], searchValue);
 
             if(colIndex > -1) {
-                return new Pair<Integer, Integer>(mid, colIndex);
+                return new Pair<>(mid, colIndex);
             } else if(input[mid][0] > searchValue) {
                 end = mid - 1;
             } else {
@@ -207,12 +182,37 @@ public class Solution {
         return -1;
     }
 
+    @Test
+    public void test_generalTest() {
+        List<Integer> input = Arrays.asList(1,2,3,4);
+        List<Integer> expected = Arrays.asList(1,2,3);
+        Function<Integer, Integer> f = (x) -> x;
+        BiFunction<Integer, Integer, Object> validation = (x, y) -> {
+            assertEquals(x, y);
+            return true;
+        };
+        try {
+            generalTest(input, expected, f, validation);
+            fail("Didn't throw expected assertion error");
+        } catch(AssertionError ae) {
+            assertEquals(
+                ae.getMessage(),
+                "Test authorship error: input [4] and expected [3] list sizes differ");
+        }
+    }
+
     /*Helper Functions*/
     private void generalTest(
             List input,
             List expected,
             Function f,
             BiFunction validate) {
+        if(input.size() != expected.size()) {
+            throw new AssertionError(String.format(
+                    "Test authorship error: input [%d] and expected [%d] list sizes differ",
+                    input.size(),
+                    expected.size()));
+        }
         List<AssertionErrorStruct> assertionErrors = new ArrayList<>();
 
         for (int i = 0; i < input.size(); i++) {
